@@ -1,0 +1,6 @@
+Keys:
+
+Left - Left Arrow
+Right - Right Arrow
+Jump - Up Arrow
+Attack - Alt
