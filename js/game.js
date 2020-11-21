@@ -12,7 +12,7 @@ var tiles = pjs.tiles;
 
 var preset = pjs.presets;
 
-//console.log(control.getKeyList());
+console.log(control.getKeyList());
 
                     //=====================BOSSSTATE=====================
 
@@ -243,7 +243,9 @@ function BulletsState(){
 }
 
 function Jump(){ 
-    player.y -= jump_height;
+  
+    if(player.y > 200)
+        player.y -= jump_height;
 }
 
                         //Level state
@@ -342,6 +344,7 @@ game.newLoop("update_level1", function(){
         
             boss_1.setPosition(point(700, 400));
         }else if(control.isDown("ESC")){
+            pjs.mouseControl.initControl();
             game.setLoop("Menu");
         }
     }
@@ -351,7 +354,7 @@ game.newLoop("update_level1", function(){
         
         if(control.isDown("ENTER")){
             pjs.mouseControl.initControl();
-            game.setLoop("Menu");
+            game.setLoop("Levels_menu");
         }
         //след уровень
     }
@@ -386,6 +389,7 @@ game.newLoop("update_level2", function(){
         
             boss_1.setPosition(point(700, 400));
         }else if(control.isDown("ESC")){
+            pjs.mouseControl.initControl();
             game.setLoop("Menu");
         }
     }
@@ -395,7 +399,7 @@ game.newLoop("update_level2", function(){
         
         if(control.isDown("ENTER")){
             pjs.mouseControl.initControl();
-            game.setLoop("Menu");
+            game.setLoop("Levels_menu");
         }
         //след уровень
     }
@@ -430,6 +434,7 @@ game.newLoop("update_level3", function(){
         
             boss_1.setPosition(point(700, 400));
         }else if(control.isDown("ESC")){
+            pjs.mouseControl.initControl();
             game.setLoop("Menu");
         }
     }
@@ -439,7 +444,7 @@ game.newLoop("update_level3", function(){
         
         if(control.isDown("ENTER")){
             pjs.mouseControl.initControl();
-            game.setLoop("Menu");
+            game.setLoop("Levels_menu");
         }
         //след уровень
     }
@@ -475,6 +480,7 @@ game.newLoop("update_level4", function(){
             boss_1.setPosition(point(700, 400));
         }else if(control.isDown("ESC")){
             game.setLoop("Menu");
+            pjs.mouseControl.initControl();
         }
     }
     
@@ -483,7 +489,7 @@ game.newLoop("update_level4", function(){
         
         if(control.isDown("ENTER")){
             pjs.mouseControl.initControl();
-            game.setLoop("Menu");
+            game.setLoop("Levels_menu");
         }
         //след уровень
     }
@@ -518,6 +524,7 @@ game.newLoop("update_level5", function(){
         
             boss_1.setPosition(point(700, 400));
         }else if(control.isDown("ESC")){
+            pjs.mouseControl.initControl();
             game.setLoop("Menu");
         }
     }
@@ -527,7 +534,7 @@ game.newLoop("update_level5", function(){
         
         if(control.isDown("ENTER")){
             pjs.mouseControl.initControl();
-            game.setLoop("Menu");
+            game.setLoop("Levels_menu");
         }
         //след уровень
     }
