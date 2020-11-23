@@ -1,43 +1,24 @@
 class Player{
     
-    //здоровье
-    set Health(health){
-        this.health = health;
+    setPlayerVariables(health, gravity, speed, height){
+        this.health = health; //здоровье
+        this.gravity = gravity; //гравитация
+        this.speed = speed; //скорость 
+        this.jump_height = height; //высота прыжка
+        this.direction = 0; //направление
+        
+        this.bullets = []; //массив пуль
+        this.path = "assets/Player/bullet.png";
     }
     
-    //гравитация
-    set Gravity(gravity){
-        this.gravity = gravity;
-    }
-    
-    //скорость 
-     set Speed(speed){
-        this.speed = speed;
-    }
-
-    //высота прыжка
-    set Jump_height(height){
-        this.jump_height = height;
-    }
-
-    //направление 
-    set Direction(dir){
-        this.direction = dir;
-    }
-
     //точка спауна
-    set SpawnPoint(x, y){
+    setSpawnPoint(x, y){
         this.spawn_x = x;
-        this.spaw_y = y;
+        this.spawn_y = y;
     }
        
     //управление
-    Left;
-    Rigth;
-    Jump;
-    Shoot;
-    
-    set ControlKeys(left, right, jump, shoot){
+    initControlKeys(left, right, jump, shoot){
         this.Left = left;
         this.Rigth = right;
         this.Jump = jump;
@@ -45,7 +26,7 @@ class Player{
     }
     
     //полоска здоровья
-    set HealthBar(x, y, w, h, color){
+    setHealthBar(x, y, w, h, color){
         this.health_bar = game.newRectObject({
             x: x,
             y: y,
@@ -56,8 +37,8 @@ class Player{
     }
     
     //анимация ожидания
-    set Wait(x, y, w, h, scale, delay, path, frame_count){
-       this.wait = game.newAnimationObject({ 
+    setWaitAnimation(x, y, w, h, scale, delay, path, frame_count){
+       this.player_wait = game.newAnimationObject({ 
             animation : tiles.newImage(path).getAnimation(0, 0, w, h, frame_count),
             x : x, 
             y : y, 
@@ -69,12 +50,12 @@ class Player{
     }
     
     getPlayer(){
-        return this.wait;
+        return this.player_wait;
     }
     
     //анимация бега
-    set Run(x, y, w, h, scale, delay, path, frame_count){
-        this.run = new game.newAnimationObject({
+    setRunAnimation(x, y, w, h, scale, delay, path, frame_count){
+        this.player_run = new game.newAnimationObject({
             animation : tiles.newImage(path).getAnimation(0, 0, w, h, frame_count),
             x : x, 
             y : y, 
@@ -86,7 +67,7 @@ class Player{
     }
     
     //анимация стрельбы
-    set Shoot(x, y, w, h, scale, delay, path, frame_count){
+    setShootAnimation(x, y, w, h, scale, delay, path, frame_count){
         this.shoot = new game.newAnimationObject({
             animation : tiles.newImage(path).getAnimation(0, 0, w, h, frame_count),
             x : x, 
@@ -101,13 +82,15 @@ class Player{
     Attack(){
         
         if(this.timer >= 10){
-            //пуля
             
-            if(this.direction == 0){
-                //направление пули;
-            }else //направление пули;
-                
+            //пуля            
+            var bullet = new Bullet(30, this.direction);
+            bullet.setBulletImage(this.player_wait.getPositionC.x + 55,
+                                 this.player_wait.getPositionC.y - 13,
+                                 1, this.path);
+            
             //массив с пулями
+            this.bullets.push(bullet);
             this.timer = 0;
             
         }else this.timer++;
@@ -118,30 +101,43 @@ class Player{
             this.wait.y -= this.jump_height;
     }
     
+    BulletUpdate(){
+        
+        for(var i=0; i < this.bullets.length; i++){
+        
+        this.bullets[i].Move();
+                        
+        //удаление из массива пуль вышедших за пределы мира
+        if(this.bullets.includes(this.bullets[i]))
+            if(this.bullets[i].x > 1600 || this.bullets[i].x < 0)
+                this.bullets.splice(i, 1);
+        }
+    }
+    
     PlayerControl(){
         
         //движение игрока
         if(control.isDown(this.Left)){
             //анимация бега
-            this.run.setPositionC(this.wait.getPositionC());
-            this.run.setFlip(1, 0);
-            this.run.draw();
+            this.player_run.setPositionC(this.wait.getPositionC());
+            this.player_run.setFlip(1, 0);
+            this.player_run.draw();
             this.direction = 1;
             
             //движение влево
-            if(this.wait.getPositionC().x >= 30)
-                this.wait.move(point(-this.speed, 0));
+            if(this.player_wait.getPositionC().x >= 30)
+                this.player_wait.move(point(-this.speed, 0));
             
-        }else if(control.isDown(this.Right)){
+        }else if(control.isDown(this.Rigth)){
             //анимация бега
-            this.run.setPositionC(this.wait.getPositionC());
-            this.run.setFlip(0, 0);
-            this.run.draw();
+            this.player_run.setPositionC(this.wait.getPositionC());
+            this.player_run.setFlip(0, 0);
+            this.player_run.draw();
             this.direction = 0;
             
             //движение влево
-            if(this.wait.getPositionC().x <= 1506)
-                this.wait.move(point(this.speed, 0));
+            if(this.player_wait.getPositionC().x <= 1506)
+                this.player_wait.move(point(this.speed, 0));
             
         }else if(control.isDown(this.Shoot)){
             //анимация атаки
@@ -150,20 +146,20 @@ class Player{
             this.shoot.draw();
             
             //Атака
-            Attack();
+            this.Attack();
         } else {
             //анимация ожидания
-            this.wait.setFlip(this.direction, 0);
-            this.wait.draw();
+            this.player_wait.setFlip(this.direction, 0);
+            this.player_wait.draw();
         }
         
         //прыжок
         if(control.isDown(this.Jump)){
-            Jump();
+            this.Jump();
         }else if(control.isDown(this.Jump) && control.isDown(this.Left)){
-            Jump();     
+            this.Jump();     
         }else if(control.isDown(this.Jump) && control.isDown(this.Right)){
-            Jump();
+            this.Jump();
         }
     }
     
@@ -173,17 +169,21 @@ class Player{
     }
     
     Collision(obj){
+        //добавить проверку на id
         if(this.wait.isIntersect(obj)){
             //уменьшаем здоровье игрока или тормозим его движение
         }
     }
     
-    //конструктор
-    constructor(health, speed, height, gravity){
-        this.health = health;
-        this.speed = speed;
-        this.height = height;
-        this.gravity = gravity;
+    //главная функция
+    PlayerUpdate(){
+        this.Gravity();
+        this.Collision();
+        this.PlayerControl();
+        this.BulletUpdate();
     }
+    
+    //конструктор
+    constructor(){}
     
 }
