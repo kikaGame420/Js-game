@@ -75,6 +75,8 @@ var bullet_speed = 30;
 
 var timer = 0;
 
+var isBoss= false;
+
 var player_bar = game.newRectObject({
     x: 10,
     y: 10,
@@ -186,7 +188,7 @@ function PlayerMoveState(){
         Jump();     
     }
     
-    if(player.isIntersect(boss_1) && boss_bar.w > 0 && player_bar.w > -2){
+    if(player.isIntersect(boss_1) && boss_bar.w > 0 && player_bar.w > -2 && isBoss){
         player_bar.w-= 2;
     }        
     
@@ -276,9 +278,12 @@ function GroundDraw(){
 
 function Gravity(){
     
-    // гравитация для персонажа
-    if((player.getPositionC().y) < ground[0].y - 40){
-        player.y += gravity;
+    for(var i=0; i<platforms.length; i++){
+        
+        // гравитация для персонажа
+        if((player.getPositionC().y) < ground[0].y - 40 && !(player.isArrIntersect(platforms))){
+            player.y += gravity;
+        }
     }
 }
 
@@ -316,7 +321,112 @@ var win = game.newImageObject({
 });
 win.setPositionC(point(game.getWH().w2, game.getWH().h2));
 
+ function getRIR(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
 ////level1
+
+var platforms = [];
+
+var cakes = [];
+
+var platform2 = game.newImageObject({
+    file: "assets/Ground/platform_2.png",
+    x: 0,
+    y: 0,
+    scale: 0.2
+})
+
+function LoadLevel1(count, count_cake){
+            
+    var platform1 = game.newImageObject({
+            file: "assets/Ground/platform_1.png",
+            x: 200,
+            y: 400,
+            scale: 0.35
+        });
+        
+    var platform2 = game.newImageObject({
+            file: "assets/Ground/platform_1.png",
+            x: 500,
+            y: 300,
+            scale: 0.35
+        });
+    
+    var platform3 = game.newImageObject({
+            file: "assets/Ground/platform_1.png",
+            x: 700,
+            y: 200,
+            scale: 0.35
+        });
+    
+    var platform4 = game.newImageObject({
+            file: "assets/Ground/platform_1.png",
+            x: 400,
+            y: 400,
+            scale: 0.35
+        });
+    
+    var platform5 = game.newImageObject({
+            file: "assets/Ground/platform_1.png",
+            x: 800,
+            y: 400,
+            scale: 0.35
+        });
+    
+    platforms.push(platform1);
+    
+    platforms.push(platform2);
+        
+    platforms.push(platform3);
+    
+    platforms.push(platform4);
+    
+    platforms.push(platform5);
+    
+    for(var i=0; i<count_cake; i++){
+        
+        var cake = game.newImageObject({
+            file: "assets/Decoration/cake1.png",
+            x: getRIR(200, 1000),
+            y: getRIR(200, 400),
+            scale: 0.2
+        });
+        
+        cakes.push(cake);
+    }
+}
+
+function DrawPaC(){
+    
+    for(var i=0; i<cakes.length; i++){
+        
+        if(cakes.includes(cakes[i]))
+            if(player.isIntersect(cakes[i]))
+                cakes.splice(i, 1);
+    }
+    
+    for(var i=0; i<platforms.length; i++){
+        platforms[i].draw();
+    }
+    
+    for(var i=0; i<cakes.length; i++){
+        
+        if(cakes.includes(cakes[i])){
+            
+            if( cakes[i].getPositionC().y < ground[0].y - 20)
+                cakes[i].y += gravity;
+            
+            cakes[i].draw();
+        }
+            
+    }
+    
+}
+
+LoadLevel1(3, 6);
+
 game.newLoop("update_level1", function(){
     
     if(player_bar.w > 0 && boss_bar.w > 0){
@@ -324,62 +434,14 @@ game.newLoop("update_level1", function(){
     
         Gravity();
     
-        BulletsState();
-    
-        BossState();
-    
+        DrawPaC();
+        
         PlayerMoveState();
-    
+           
         Camera();
         
     }
     
-    if(player_bar.w <= 0){
-        pjs.camera.setPosition(point(0, 0));
-        fail.draw();
-        
-        if(control.isDown("ENTER")){
-            player_bar.w = 150;
-            boss_bar.w = 400;
-        
-            spaw_x = game.getWH().w2;
-            spaw_y = game.getWH().h2;
-        
-            boss_1.setPosition(point(700, 400));
-        }else if(control.isDown("ESC")){
-            pjs.mouseControl.initControl();
-            
-            player_bar.w = 150;
-            boss_bar.w = 400;
-        
-            spaw_x = game.getWH().w2;
-            spaw_y = game.getWH().h2;
-        
-            boss_1.setPosition(point(700, 400));
-            
-            game.setLoop("Menu");
-        }
-    }
-    
-    if(boss_bar.w <= 0){
-        pjs.camera.setPosition(point(0, 0));
-        win.draw();
-        
-        if(control.isDown("ENTER")){
-            pjs.mouseControl.initControl();
-            
-            player_bar.w = 150;
-            boss_bar.w = 400;
-        
-            spaw_x = game.getWH().w2;
-            spaw_y = game.getWH().h2;
-        
-            boss_1.setPosition(point(700, 400));
-            
-            game.setLoop("Levels_menu");
-        }
-        //след уровень
-    }
 });
 
 game.newLoop("update_level2", function(){
