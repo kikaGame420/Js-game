@@ -1,7 +1,6 @@
 class Level{
         
-    //жизни
-  
+    //жизни  
     
     initLevel(widht){
         this.width = widht;
@@ -88,6 +87,7 @@ class Level{
     initObstacles(count, y, scale, path){
         
         for(var i=0; i<count; i++){
+            
             this.obs = game.newImageObject({
                 file: path,
                 x: this.getRIR(0, this.width),
@@ -100,11 +100,56 @@ class Level{
     }
     
     //инициализируем Врагов
-    initEnemys(){
+    initEnemys(count, y, w, h, scale, walk_path, attack_path){
         
+        for(var i=0; i<count; i++){
+            
+            this.enemy = new Enemy();
+            this.enemy.setEnemyVariables(10, 5, 250);
+            this.enemy.setAttackAnimation(this.getRIR(0, this.width), 
+                                         y, w, h, scale, 5, attack_path, 5);
+            
+            this.enemy.setWalkAnimation(this.getRIR(0, this.width), 
+                                       y, w, h, scale, 5, walk_path, 5);
+            
+            this.Enemys.push(this.enemy);
+        }
     }
     
-    LevelUpdate(){
+    //обновление уровня
+    LevelUpdate(name){
+        
+        game.newLoop(name, function(){
+            //отрисовка фона
+            for(var i=0; i<this.Background.length; i++){
+                this.Background[i].draw();
+            }
+
+            //отрисовка земли
+            for(var i=0; i<this.Foreground.length; i++){
+                this.Foreground[i].draw();
+            }
+
+            //отрисовка декорации
+            for(var i=0; i<this.decorations.length; i++){
+                this.decorations[i].draw();
+            }
+
+            //отрисовка Артефактов
+            for(var i=0; i<this.arts.length; i++){
+                this.arts[i].draw();
+            }
+
+            //отрисовка препятствий
+            for(var i=0; i<this.obstacles.length; i++){
+                this.obstacles[i].draw();
+            }
+
+            //отрисовка врагов
+            for(var i=0; i<this.Enemys.length; i++){
+                this.Enemys[i].draw();
+            }
+        });
         
     }
     
